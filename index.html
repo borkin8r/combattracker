@@ -1,0 +1,100 @@
+<html>
+<head>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body>
+    <script>
+        Alpine.data('tracker', () => ({
+            count: 0,
+            nextId: 0,
+            combatants: [],
+            increment() {
+                this.count++;
+                for (let combatant of this.combatants) {
+                    combatant.secondsLeft--;
+                    if (combatant.secondsLeft < 1) {
+                        combatant.ready = true;
+                    }
+                }
+            },
+            decrement() {
+                this.count--;
+                for (let combatant of this.combatants) {
+                    combatant.secondsLeft++;
+                    if (combatant.secondsLeft > 0) {
+                        combatant.ready = false;
+                    }
+                }
+            },
+            addCombatant() { this.combatants.push({id: this.nextId++, name: '', action: '', secondsLeft: 10, ready: false}) },
+            removeCombatant(index) { this.combatants.splice(index, 1) },
+            sortCombatants() { 
+                for (let combatant of this.combatants) {
+                    combatant.ready = combatant.secondsLeft < 1;
+                }
+                this.combatants.sort((a, b) => {
+                    if (a.secondsLeft > b.secondsLeft) {
+                        return 1;
+                    }
+                    if (a.secondsLeft < b.secondsLeft) {
+                        return -1;
+                    }
+                    return 0;
+            })}
+        }))
+    </script>
+    <div x-data="tracker">
+        <div class="counter">
+          <h1 x-text="'Step: ' + count">Step: </h1>
+          <button @click="increment">Advance Time 1 Second</button>
+          <button @click="decrement">Rewind Time 1 Second</button>
+        </div>
+        <div class="controls">
+          <button class="success" @click="addCombatant">Add Combatant</button>
+          <button @click="sortCombatants">Sort by time till action</button>
+        </div>
+        <table class="primary">
+          <thead>
+            <th>Status</th>
+            <th>Name</th>
+            <th>Action</th>
+            <th>Seconds Left</th>
+            <th></th>
+          </thead>
+          <tbody>
+            <template x-for="(combatant, index) in combatants" :key "combatant.id">
+                <tr>
+                    <template x-if="combatant.ready">
+                        <td >
+                            <span>Ready!</span>
+                        </td>
+                    </template>
+                    <template x-if="!combatant.ready">
+                        <td x-if="!combatant.ready">
+                            <span></span>
+                        </td>
+                    </template>
+                    <td>
+                        <input x-model="combatant.name" type="text"/>
+                    </td>
+                    <td> 
+                        <input x-model="combatant.action" type="text"/>
+                    </td>
+                    <td>
+                        <input @blur="sortCombatants" x-model="combatant.secondsLeft" type="number"/>
+                    </td>
+                    <td>
+                        <button @click="removeCombatant(index)">X</button>
+                    </td>
+                </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+</body>
+<style>
+    .ready {
+        background: green;
+    }
+</style>
+</html>
