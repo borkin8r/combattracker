@@ -43,9 +43,9 @@
             })}
         }))
     </script>
-    <div x-data="tracker">
+    <div class="parent" x-data="tracker">
+        <h1 class="center-headline" x-text="'Step: ' + count">Step: </h1>
         <div class="counter">
-          <h1 x-text="'Step: ' + count">Step: </h1>
           <button @click="increment">Advance Time 1 Second</button>
           <button @click="decrement">Rewind Time 1 Second</button>
         </div>
@@ -65,7 +65,7 @@
             <template x-for="(combatant, index) in combatants" :key "combatant.id">
                 <tr>
                     <template x-if="combatant.ready">
-                        <td >
+                        <td class="ready">
                             <span>Ready!</span>
                         </td>
                     </template>
@@ -94,7 +94,17 @@
 </body>
 <style>
     .ready {
-        background: green;
+        background: #0f0;
+    }
+    .parent {
+        display: grid;
+        place-items: center;
+    }
+    .center-headline {
+        text-align: center;
+    }
+    .counter {
+        margin-bottom: 0.5rem;
     }
 </style>
 </html>
